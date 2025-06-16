@@ -1,9 +1,14 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FirstPersonPointer : MonoBehaviour
 {
     public static System.Action<PointableObject> OnObjectPointed;
+    public static System.Action<InspectionableObject> OnInspectionateObject;
+    public static System.Action<HoldableObject> OnGrabObject;
+    public Transform grabPoint; // Transform where the object will be held
+    public static FirstPersonPointer Instance { get; private set; }
     private PointableObject currentPointedObject;
     public Image pointerImage; // UI Image to represent the pointer
 
@@ -11,6 +16,7 @@ public class FirstPersonPointer : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked; // Lock the cursor to the center of the screen
         Cursor.visible = false; // Hide the cursor
+        Instance = this; // Set the singleton instance
     }
 
     private void Update()
@@ -24,6 +30,32 @@ public class FirstPersonPointer : MonoBehaviour
                 currentPointedObject.OnPointerClick(); // Invoke the click event on the pointed object
             }
         }
+        RotateGrabPoint(); // Handle rotation of the grab point
+    }
+
+    // function to rotate the grab point, allowing the player to rotate the object they are holding 45 degrees to the left or right using input E and Q respectively.
+    public void RotateGrabPoint()
+    {
+        if (Input.GetKey(KeyCode.E)) // Rotate right
+        {
+            RotateGrabPointRight();
+        }
+        else if (Input.GetKey(KeyCode.Q)) // Rotate left
+        {
+            RotateGrabPointLeft();
+        }
+    }
+
+    private void RotateGrabPointLeft()
+    {
+        // limit the rotation to 45 degrees to the left in interpolation
+        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, 45f, 0), 360 * Time.deltaTime);
+    }
+
+    private void RotateGrabPointRight()
+    {
+        // limit the rotation to 45 degrees to the right in interpolation
+        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, -45f, 0), 360 * Time.deltaTime);
     }
 
     public void RayCastInMiddleOfScreen()
