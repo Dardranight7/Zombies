@@ -5,25 +5,41 @@ public class HoldableObject : PointableObject
     public bool isHeld = false; // Flag to check if the object is held
     public Rigidbody rb; // Rigidbody component for physics interactions
     public float holdVelocity = 500f; // Speed at which the object moves towards the grab point
+    public float angleLimit = 45f; // Limit for rotation angle
+    float timeToHoldAgain = 0;
 
     private void Awake()
     {
-        onClickToToggle.AddListener(state =>
+        onClicked.AddListener(BeHolded); // Add listener for the click event to hold the object
+    }
+
+    private void OnDestroy()
+    {
+        onClicked.RemoveListener(BeHolded); // Remove listener for the click event to hold the object
+    }
+
+    private void Update()
+    {
+        if (isHeld)
         {
-            if (state)
-            {
-                BeHolded();
-            }
-            else
+            if (Input.GetMouseButtonDown(0))
             {
                 BeReleased();
+                timeToHoldAgain = Time.time + 0.2f; // Set a cooldown time to prevent immediate re-holding
             }
-        }); // Add listener for click to toggle hold state
+            if (Input.GetMouseButtonDown(1))
+            {
+                BeReleasedWithForce();
+                timeToHoldAgain = Time.time + 0.2f; // Set a cooldown time to prevent immediate re-holding
+            }
+        }
     }
 
     public void BeHolded()
     {
-        FirstPersonPointer.OnGrabObject?.Invoke(this); // Notify that this object is being held
+        if (isHeld || timeToHoldAgain - Time.time > 0)
+            return;
+        FirstPersonPointer.OnGrabObject?.Invoke(this, angleLimit); // Notify that this object is being held
         isHeld = true; // Set the held state to true
         rb.useGravity = false; // Disable gravity for the object while held
     }
@@ -32,7 +48,15 @@ public class HoldableObject : PointableObject
     {
         isHeld = false; // Set the held state to false
         rb.useGravity = true; // Enable gravity for the object
-        FirstPersonPointer.OnGrabObject?.Invoke(null); // Notify that this object is being held
+        FirstPersonPointer.OnGrabObject?.Invoke(null, angleLimit); // Notify that this object is being held
+    }
+
+    public void BeReleasedWithForce()
+    {
+        isHeld = false; // Set the held state to false
+        rb.useGravity = true; // Enable gravity for the object
+        rb.AddForce(FirstPersonPointer.Instance.grabPoint.forward * 600f); // Add force to the object when released
+        FirstPersonPointer.OnGrabObject?.Invoke(null, angleLimit); // Notify that this object is being held
     }
 
     public void FixedUpdate()

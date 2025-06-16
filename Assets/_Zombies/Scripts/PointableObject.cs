@@ -6,7 +6,7 @@ public class PointableObject : MonoBehaviour
 {
     public UnityEvent onClicked; // UnityEvent to handle pointer events
     public UnityEvent<bool> onClickToToggle;
-    bool lastState = false; // Track the last state for toggling
+    public bool lastState = true; // Track the last state for toggling
     public void OnPointerClick()
     {
         // Handle pointer click event here if needed

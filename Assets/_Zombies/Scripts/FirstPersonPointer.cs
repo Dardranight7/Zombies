@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,17 +7,28 @@ public class FirstPersonPointer : MonoBehaviour
 {
     public static System.Action<PointableObject> OnObjectPointed;
     public static System.Action<InspectionableObject> OnInspectionateObject;
-    public static System.Action<HoldableObject> OnGrabObject;
+    public static System.Action<HoldableObject, float> OnGrabObject;
     public Transform grabPoint; // Transform where the object will be held
     public static FirstPersonPointer Instance { get; private set; }
     private PointableObject currentPointedObject;
     public Image pointerImage; // UI Image to represent the pointer
+
+    public HoldableObject currentHoldableObject; // Current holdable object being interacted with
+    float currentHoldableObjectAngle; // Distance to the current holdable object
 
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked; // Lock the cursor to the center of the screen
         Cursor.visible = false; // Hide the cursor
         Instance = this; // Set the singleton instance
+        OnGrabObject += HandleHoldObject; // Subscribe to the OnGrabObject event
+    }
+
+    public void HandleHoldObject(HoldableObject holdableObject, float angle)
+    {
+        currentHoldableObjectAngle = angle; // Store the angle limit for the current holdable object
+        currentHoldableObject = holdableObject; // Set the current holdable object
+        grabPoint.localRotation = Quaternion.identity; // Reset the grab point rotation
     }
 
     private void Update()
@@ -49,13 +61,13 @@ public class FirstPersonPointer : MonoBehaviour
     private void RotateGrabPointLeft()
     {
         // limit the rotation to 45 degrees to the left in interpolation
-        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, 45f, 0), 360 * Time.deltaTime);
+        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, currentHoldableObjectAngle, 0), 360 * Time.deltaTime);
     }
 
     private void RotateGrabPointRight()
     {
         // limit the rotation to 45 degrees to the right in interpolation
-        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, -45f, 0), 360 * Time.deltaTime);
+        grabPoint.localRotation = Quaternion.RotateTowards(grabPoint.localRotation, Quaternion.Euler(0, -currentHoldableObjectAngle, 0), 360 * Time.deltaTime);
     }
 
     public void RayCastInMiddleOfScreen()
@@ -88,6 +100,7 @@ public class FirstPersonPointer : MonoBehaviour
     private void OnDestroy()
     {
         OnObjectPointed -= HandleObjectPointed;
+        OnGrabObject -= HandleHoldObject; // Unsubscribe from the OnGrabObject event to prevent memory leaks
     }
 
     public void HandleObjectPointed(PointableObject pointableObject)
