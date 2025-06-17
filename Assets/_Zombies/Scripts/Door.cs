@@ -25,6 +25,7 @@ public class Door : PointableObject
         }
 
         HandleHandleRotation();
+
         if (isInteracting)
         {
             float mouseX = Input.GetAxis("Mouse X");
@@ -41,11 +42,22 @@ public class Door : PointableObject
 
     public void HandleHandleRotation()
     {
-        doorHandle.localRotation = Quaternion.RotateTowards(doorHandle.localRotation, Quaternion.Euler(0, 0, 90), 180 * Time.deltaTime); 
+        if (isInteracting)
+        {
+            doorHandle.localRotation = Quaternion.RotateTowards(doorHandle.localRotation, Quaternion.Euler(0, 0, 45), 180 * Time.deltaTime); 
+        }
+        else
+        {
+            doorHandle.localRotation = Quaternion.RotateTowards(doorHandle.localRotation, Quaternion.Euler(0, 0, 0), 180 * Time.deltaTime);
+        }
     }
 
     public void HandleDoorInteraction()
     {
-        isInteracting = true;
+        // Verificar si el jugador está lo suficientemente cerca de la puerta para interactuar
+        if ((PlayerController.Instance.transform.position - transform.position).sqrMagnitude < 3f * 3f)
+        {
+            isInteracting = true;
+        }
     }
 }
