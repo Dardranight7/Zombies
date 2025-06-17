@@ -131,6 +131,9 @@ MonoBehaviour:
   maxAngle: 0
   rotationSpeed: 5
   invertInput: 1
+  audioSource: {fileID: 1492748751383584007}
+  openSound: {fileID: 8300000, guid: 4f0e2584ebb29ed4f8146c59af36fe9d, type: 3}
+  closeSound: {fileID: 8300000, guid: ff6cc9ac6059cc14cb5ecb5057cd2e29, type: 3}
 --- !u!65 &5095558232233461171
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -192,7 +195,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
