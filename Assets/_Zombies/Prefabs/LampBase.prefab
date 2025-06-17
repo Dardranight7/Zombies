@@ -2389,7 +2389,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 141.35017
-  m_Range: 4.45
+  m_Range: 4.49
   m_SpotAngle: 137.08252
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
