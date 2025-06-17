@@ -15,10 +15,8 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
+        Instance = this;
+        
         // Initialize input actions
         inputActions = new InputManager();
     }
