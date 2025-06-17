@@ -3266,6 +3266,8 @@ MonoBehaviour:
       Owner: {fileID: 283883628}
       Enabled: 1
       Input:
+        InputAction: {fileID: 0}
+        Gain: 1
         LegacyInput: Mouse X
         LegacyGain: 100
         CancelDeltaTime: 0
@@ -3277,6 +3279,8 @@ MonoBehaviour:
       Owner: {fileID: 283883628}
       Enabled: 1
       Input:
+        InputAction: {fileID: 0}
+        Gain: 1
         LegacyInput: Mouse Y
         LegacyGain: -100
         CancelDeltaTime: 0
@@ -3284,6 +3288,8 @@ MonoBehaviour:
       Driver:
         AccelTime: 0.2
         DecelTime: 0.2
+  PlayerIndex: -1
+  AutoEnableInputs: 1
 --- !u!114 &283883632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4436,7 +4442,7 @@ Camera:
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
-  m_FocusDistance: 0.1
+  m_FocusDistance: 5.5330863
   m_FocalLength: 13.858139
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
@@ -8458,6 +8464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be864efa8593f2e41b52b194c4f18ae7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!114 &803494976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23766,7 +23773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3521683706821390877
 Transform:
   m_ObjectHideFlags: 0
