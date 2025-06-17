@@ -7,6 +7,7 @@ public class HoldableObject : PointableObject
     public float holdVelocity = 500f; // Speed at which the object moves towards the grab point
     public float angleLimit = 45f; // Limit for rotation angle
     float timeToHoldAgain = 0;
+    public float releaseForce = 600f; // Force applied when the object is released with force
 
     private void Awake()
     {
@@ -55,7 +56,7 @@ public class HoldableObject : PointableObject
     {
         isHeld = false; // Set the held state to false
         rb.useGravity = true; // Enable gravity for the object
-        rb.AddForce(FirstPersonPointer.Instance.grabPoint.forward * 600f); // Add force to the object when released
+        rb.AddForce(FirstPersonPointer.Instance.grabPoint.forward * releaseForce); // Add force to the object when released
         FirstPersonPointer.OnGrabObject?.Invoke(null, angleLimit); // Notify that this object is being held
     }
 
