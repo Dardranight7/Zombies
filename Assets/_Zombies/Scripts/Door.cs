@@ -14,10 +14,23 @@ public class Door : PointableObject
 
     public bool invertInput; // Invertir la dirección del movimiento del mouse
 
-    void Update()
+    public AudioSource audioSource; // Fuente de audio para reproducir sonidos
+    public AudioClip openSound; // Sonido al abrir la puerta
+    public AudioClip closeSound; // Sonido al cerrar la puerta
+
+
+    private void Awake()
     {
         onClicked.AddListener(HandleDoorInteraction);
-        
+    }
+
+    private void OnDestroy()
+    {
+        onClicked.RemoveAllListeners(); // Eliminar todos los listeners al destruir el objeto
+    }
+
+    void Update()
+    {   
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -37,8 +50,20 @@ public class Door : PointableObject
 
             // Rotar la puerta alrededor de su eje Y
             doorPivot.localRotation = Quaternion.Euler(0, currentAngle, 0);
+
+            if (maxAngle - currentAngle <= 2 && closeIsPlayed == false) // Si la puerta está casi cerrada y el sonido está reproduciéndose
+            {
+                audioSource.PlayOneShot(closeSound); // Reproducir sonido de cierre
+                closeIsPlayed = true; // Marcar que el sonido de cierre ya se ha reproducido
+            }
+            if (maxAngle - currentAngle > 6 )
+            {
+                closeIsPlayed = false; // Reiniciar la variable si la puerta se abre de nuevo
+            }
         }
     }
+
+    bool closeIsPlayed = false; // Variable para verificar si el sonido de cierre ya se ha reproducido
 
     public void HandleHandleRotation()
     {
@@ -58,6 +83,8 @@ public class Door : PointableObject
         if ((PlayerController.Instance.transform.position - transform.position).sqrMagnitude < 3f * 3f)
         {
             isInteracting = true;
+            audioSource.pitch = Random.Range(0.9f, 1.1f); // Ajustar el pitch aleatoriamente
+            audioSource.PlayOneShot(openSound); // Reproducir sonido de apertura
         }
     }
 }
