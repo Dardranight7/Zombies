@@ -7,17 +7,19 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance { get; private set; }
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f; // Movement speed multiplier
+    public float moveSpeed = 5f;
 
-    private Rigidbody rb; // Rigidbody reference
-    private InputManager inputActions; // Input system class
-    private Vector2 movementInput; // Store movement input (X, Z)
+    [Header("References")]
+    public Animator animator;
+
+    private Rigidbody rb;
+    private InputManager inputActions;
+    private Vector2 movementInput;
+    private Transform camTransform;
 
     private void Awake()
     {
         Instance = this;
-        
-        // Initialize input actions
         inputActions = new InputManager();
     }
 
@@ -38,27 +40,44 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        camTransform = Camera.main.transform;
     }
 
     private void FixedUpdate()
     {
-        // Move the player using Rigidbody physics
-        Vector3 moveDirection = new Vector3(movementInput.x, 0, movementInput.y);
+        // Obtener forward y right de la cámara, aplanados en el plano XZ
+        Vector3 camForward = camTransform.forward;
+        Vector3 camRight = camTransform.right;
+        camForward.y = 0f;
+        camRight.y = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
+
+        // Movimiento relativo a cámara, solo en XZ
+        Vector3 moveDirection = camForward * movementInput.y + camRight * movementInput.x;
+        moveDirection.Normalize(); // Asegura que no supere la magnitud 1 al moverse en diagonal
         Vector3 velocity = moveDirection * moveSpeed;
+
+        // Aplicar la velocidad en XZ, mantener la Y actual
         Vector3 currentVelocity = rb.linearVelocity;
         rb.linearVelocity = new Vector3(velocity.x, currentVelocity.y, velocity.z);
+
+        // Animación de velocidad
+        if (animator != null)
+        {
+            float planarSpeed = new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude;
+            animator.SetFloat("Speed", planarSpeed);
+        }
+
     }
 
-    // Called when movement input is performed
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         movementInput = context.ReadValue<Vector2>();
     }
 
-    // Called when movement input is released
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         movementInput = Vector2.zero;
     }
 }
-
